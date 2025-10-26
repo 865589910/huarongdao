@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学华容道趣味挑战</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- LeanCloud SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.0/dist/av-min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 班级选择界面 -->
+        <div id="class-select-screen" class="screen active">
+            <div class="class-select-content">
+                <h1>🎯 数学华容道挑战赛 🎯</h1>
+                <div class="animal-sticker">📚</div>
+                <p class="select-text">请选择你的班级</p>
+                
+                <div class="class-buttons">
+                    <button class="class-btn" data-class="1">
+                        <span class="class-name">一班</span>
+                    </button>
+                    <button class="class-btn" data-class="2">
+                        <span class="class-name">二班</span>
+                    </button>
+                    <button class="class-btn" data-class="3">
+                        <span class="class-name">三班</span>
+                    </button>
+                    <button class="class-btn" data-class="4">
+                        <span class="class-name">四班</span>
+                    </button>
+                    <button class="class-btn" data-class="5">
+                        <span class="class-name">五班</span>
+                    </button>
+                    <button class="class-btn" data-class="6">
+                        <span class="class-name">六班</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 欢迎界面 -->
+        <div id="welcome-screen" class="screen">
+            <div class="welcome-content">
+                <h1>🎯 数学华容道挑战赛 🎯</h1>
+                <div class="class-badge" id="class-badge"></div>
+                <div class="animal-sticker">🐼</div>
+                <p class="welcome-text">欢迎来到数学华容道游戏！</p>
+                <p class="info-text">📌 游戏规则：</p>
+                <ul class="rules-list">
+                    <li>第一阶段：完成5个关卡（2个3×3，2个4×4，1个5×5）</li>
+                    <li>第二阶段：10分钟限时挑战（2个3×3，2个4×4，2个5×5，无限6×6）</li>
+                    <li>每个人只能参加一次，请认真完成！</li>
+                </ul>
+                <button id="start-btn" class="btn-primary">开始挑战 🚀</button>
+                <button id="view-leaderboard-btn" class="btn-secondary">查看排行榜 📊</button>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="game-screen" class="screen">
+            <div class="game-header">
+                <div class="stage-info">
+                    <span id="stage-text">第一阶段</span>
+                    <span id="level-text">关卡 1/5</span>
+                </div>
+                <div class="timer-info">
+                    <span id="timer">⏱️ 00:00</span>
+                </div>
+                <div class="moves-info">
+                    <span id="moves">步数: 0</span>
+                </div>
+            </div>
+
+            <div class="game-container">
+                <div id="puzzle-grid" class="puzzle-grid"></div>
+            </div>
+
+            <div class="game-controls">
+                <div class="keyboard-hint">💡 提示：点击数字块即可移动</div>
+            </div>
+        </div>
+
+        <!-- 排行榜界面 -->
+        <div id="leaderboard-screen" class="screen">
+            <div class="leaderboard-content">
+                <h1>🏆 排行榜 🏆</h1>
+                <div class="animal-sticker">🏅</div>
+                
+                <div id="leaderboard-list" class="leaderboard-list">
+                    <div class="loading">加载中...</div>
+                </div>
+                
+                <button id="back-to-welcome" class="btn-secondary">返回首页</button>
+            </div>
+        </div>
+
+        <!-- 积分结算界面 -->
+        <div id="score-screen" class="screen">
+            <div class="score-content">
+                <h1>🎉 挑战完成！🎉</h1>
+                <div class="animal-sticker">🎊</div>
+                
+                <div class="score-details">
+                    <h2>成绩单</h2>
+                    <div class="score-item">
+                        <span>第一阶段用时：</span>
+                        <span id="stage1-time">--</span>
+                    </div>
+                    <div class="score-item">
+                        <span>第一阶段积分：</span>
+                        <span id="stage1-score">--</span>
+                    </div>
+                    <div class="score-item">
+                        <span>第二阶段完成数：</span>
+                        <span id="stage2-completed">--</span>
+                    </div>
+                    <div class="score-item">
+                        <span>第二阶段积分：</span>
+                        <span id="stage2-score">--</span>
+                    </div>
+                    <div class="score-item total">
+                        <span>总积分：</span>
+                        <span id="total-score">--</span>
+                    </div>
+                </div>
+
+                <div class="name-input-section">
+                    <label for="player-name">请输入你的姓名：</label>
+                    <input type="text" id="player-name" placeholder="请输入姓名" maxlength="10">
+                    <button id="submit-score-btn" class="btn-primary">提交成绩</button>
+                </div>
+
+                <div id="submit-message" class="submit-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

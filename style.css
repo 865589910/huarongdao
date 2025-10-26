@@ -1,0 +1,555 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* 移动端性能优化 */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFD700 50%, #87CEEB 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* 通用屏幕样式 */
+.screen {
+    display: none;
+    background: linear-gradient(135deg, #FFF9E6 0%, #FFF0F5 100%);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(255, 182, 193, 0.5);
+    min-height: 90vh;
+    border: 4px solid #FF69B4;
+}
+
+.screen.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 欢迎界面 */
+.welcome-content {
+    text-align: center;
+}
+
+.welcome-content h1 {
+    color: #FF1493;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+}
+
+.animal-sticker {
+    font-size: 5em;
+    margin: 20px 0;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.welcome-text {
+    font-size: 1.3em;
+    color: #333;
+    margin: 20px 0;
+}
+
+.info-text {
+    font-size: 1.2em;
+    color: #FF6347;
+    font-weight: bold;
+    margin: 20px 0 10px;
+}
+
+.rules-list {
+    text-align: left;
+    display: inline-block;
+    font-size: 1.1em;
+    line-height: 2;
+    color: #555;
+    margin: 20px 0;
+}
+
+.rules-list li {
+    margin: 10px 0;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+    color: white;
+    border: none;
+    padding: 18px 45px;
+    font-size: 1.4em;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(255, 107, 157, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #87CEEB 0%, #6495ED 100%);
+    color: white;
+    border: none;
+    padding: 18px 45px;
+    font-size: 1.4em;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 20px rgba(135, 206, 235, 0.4);
+    font-weight: bold;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(135, 206, 235, 0.6);
+}
+
+.btn-secondary:active {
+    transform: translateY(-2px);
+}
+
+/* 班级选择界面 */
+.class-select-content {
+    text-align: center;
+}
+
+.class-select-content h1 {
+    color: #FF1493;
+    font-size: 2.2em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+}
+
+.select-text {
+    font-size: 1.4em;
+    color: #FF6347;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.class-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 30px auto;
+    max-width: 500px;
+}
+
+.class-btn {
+    background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+    color: white;
+    border: 3px solid #FF1493;
+    padding: 25px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+}
+
+.class-btn:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(255, 105, 180, 0.6);
+    background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+}
+
+.class-btn:active {
+    transform: translateY(-3px);
+}
+
+.class-name {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.class-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+}
+
+/* 游戏界面 */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.stage-info, .timer-info, .moves-info {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #FF1493;
+}
+
+#stage-text {
+    background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    margin-right: 10px;
+    font-size: 1.1em;
+    box-shadow: 0 3px 10px rgba(255, 105, 180, 0.3);
+}
+
+#timer {
+    font-size: 1.3em;
+    color: #e74c3c;
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.puzzle-grid {
+    display: inline-grid;
+    gap: 10px;
+    padding: 25px;
+    background: linear-gradient(135deg, #FFF9E6 0%, #FFE4E1 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+    border: 4px solid #FFB6C1;
+}
+
+.puzzle-tile {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    border: 3px solid #FF1493;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+    box-shadow: 0 6px 15px rgba(255, 107, 157, 0.4);
+    /* 性能优化 */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: transform;
+}
+
+.puzzle-tile:active {
+    transform: scale(0.9);
+    box-shadow: 0 3px 8px rgba(255, 107, 157, 0.6);
+}
+
+.puzzle-tile.empty {
+    background: transparent;
+    box-shadow: none;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* 游戏控制按钮 */
+.game-controls {
+    margin-top: 30px;
+}
+
+.keyboard-hint {
+    text-align: center;
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+}
+
+.control-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-row {
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+/* 积分界面 */
+.score-content {
+    text-align: center;
+}
+
+.score-content h1 {
+    color: #667eea;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.score-content h2 {
+    color: #764ba2;
+    font-size: 1.8em;
+    margin: 30px 0 20px;
+}
+
+.score-details {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 30px;
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.score-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    margin: 10px 0;
+    background: white;
+    border-radius: 10px;
+    font-size: 1.2em;
+}
+
+.score-item.total {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.name-input-section {
+    margin: 30px 0;
+}
+
+.name-input-section label {
+    display: block;
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#player-name {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 20px;
+    font-size: 1.1em;
+    border: 2px solid #667eea;
+    border-radius: 25px;
+    outline: none;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#player-name:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.submit-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 1.1em;
+    display: none;
+}
+
+.submit-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    display: block;
+}
+
+.submit-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    display: block;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    body {
+        padding: 5px;
+    }
+
+    .screen {
+        padding: 18px;
+        border-radius: 15px;
+        min-height: 95vh;
+        border-width: 3px;
+    }
+
+    .welcome-content h1 {
+        font-size: 1.8em;
+    }
+
+    .animal-sticker {
+        font-size: 3em;
+    }
+
+    .puzzle-tile {
+        width: 18vw;
+        height: 18vw;
+        max-width: 85px;
+        max-height: 85px;
+        font-size: 1.8em;
+        border-radius: 10px;
+        border-width: 2px;
+    }
+
+    .puzzle-grid {
+        gap: 8px;
+        padding: 18px;
+        border-width: 3px;
+    }
+
+    .game-header {
+        font-size: 0.95em;
+        margin-bottom: 15px;
+    }
+
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2em;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 15px 35px;
+        font-size: 1.3em;
+    }
+    
+    .class-btn {
+        padding: 20px 25px;
+        font-size: 1.4em;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 3px;
+    }
+
+    .screen {
+        padding: 15px;
+        border-radius: 12px;
+        border-width: 2px;
+    }
+
+    .puzzle-tile {
+        width: 17vw;
+        height: 17vw;
+        max-width: 75px;
+        max-height: 75px;
+        font-size: 1.6em;
+        border-radius: 8px;
+    }
+
+    .puzzle-grid {
+        gap: 6px;
+        padding: 15px;
+    }
+
+    .game-header {
+        font-size: 0.9em;
+        margin-bottom: 12px;
+    }
+
+    .welcome-content h1 {
+        font-size: 1.6em;
+    }
+
+    .animal-sticker {
+        font-size: 2.5em;
+        margin: 15px 0;
+    }
+
+    .rules-list {
+        font-size: 1em;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 14px 32px;
+        font-size: 1.2em;
+    }
+    
+    .class-btn {
+        padding: 18px 22px;
+        font-size: 1.3em;
+    }
+    
+    .class-name {
+        font-size: 1em;
+    }
+}
