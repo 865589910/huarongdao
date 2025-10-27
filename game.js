@@ -25,42 +25,31 @@ let currentClass = null;
 
 // 游戏状态管理
 const gameState = {
-    currentStage: 1, // 1: 第一阶段, 2: 第二阶段
     currentLevel: 0,
-    stage1StartTime: 0,
-    stage1EndTime: 0,
-    stage2StartTime: 0,
-    stage2EndTime: 0,
-    stage2Timer: null,
-    stage2TimeLimit: 600, // 10分钟 = 600秒
-    stage2Remaining: 600,
+    startTime: 0,
+    endTime: 0,
+    timer: null,
+    timeLimit: 600, // 10分钟 = 600秒
+    remaining: 600,
     moves: 0,
-    stage2Completed: 0,
-    stage2SixBySixCompleted: 0,
     hasPlayed: false,
     uiUpdateTimer: null, // UI更新定时器
-    lastUpdateTime: 0 // 上次更新时间
+    lastUpdateTime: 0, // 上次更新时间
+    isPracticeMode: false // 是否为练习模式
 };
 
-// 关卡配置
-const levelConfig = {
-    stage1: [
-        { size: 3, seed: 12345 },  // 3×3 - 第1关
-        { size: 3, seed: 23456 },  // 3×3 - 第2关
-        { size: 4, seed: 34567 },  // 4×4 - 第3关
-        { size: 4, seed: 45678 },  // 4×4 - 第4关
-        { size: 5, seed: 56789 }   // 5×5 - 第5关
-    ],
-    stage2: [
-        { size: 3, seed: 67890 },   // 3×3 - 第1关
-        { size: 3, seed: 78901 },   // 3×3 - 第2关
-        { size: 4, seed: 89012 },   // 4×4 - 第3关
-        { size: 4, seed: 90123 },   // 4×4 - 第4关
-        { size: 5, seed: 11111 },   // 5×5 - 第5关
-        { size: 5, seed: 22222 }    // 5×5 - 第6关
-    ],
-    stage2Infinite: { size: 6, baseSeed: 33333 } // 6×6 无限关卡
-};
+// 练习模式关卡配置（无限随机）
+const practiceLevelSizes = [3, 3, 4, 4, 5, 5]; // 3个关卡：3x3, 4x4, 5x5 各两个
+const levelConfig = [
+    { size: 3, seed: 12345 },  // 3×3 - 第1关
+    { size: 3, seed: 23456 },  // 3×3 - 第2关
+    { size: 3, seed: 67890 },  // 3×3 - 第3关
+    { size: 4, seed: 34567 },  // 4×4 - 第4关
+    { size: 4, seed: 45678 },  // 4×4 - 第5关
+    { size: 4, seed: 89012 },  // 4×4 - 第6关
+    { size: 5, seed: 56789 },  // 5×5 - 第7关
+    { size: 5, seed: 11111 }   // 5×5 - 第8关
+];
 
 // 当前拼图状态
 let currentPuzzle = {
@@ -93,8 +82,10 @@ function initGame() {
     });
     
     document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('practice-btn').addEventListener('click', startPracticeMode);
     document.getElementById('view-leaderboard-btn').addEventListener('click', showLeaderboard);
     document.getElementById('back-to-welcome').addEventListener('click', backToWelcome);
+    document.getElementById('back-to-class').addEventListener('click', backToClassSelect);
     document.getElementById('submit-score-btn').addEventListener('click', submitScore);
 }
 
@@ -104,15 +95,26 @@ function selectClass(classId) {
     const classInfo = CLASS_CONFIG[classId];
     
     // 检查是否已经玩过
-    if (localStorage.getItem(`huarongdao_class${classId}_played`)) {
-        alert(`${classInfo.name}的同学，你已经参加过挑战了！每个人只能参加一次哦。`);
-        return;
-    }
+    const hasPlayed = localStorage.getItem(`huarongdao_class${classId}_played`);
     
     // 更新欢迎界面的班级徽章（只显示班级名称，不显示图标）
     const classBadge = document.getElementById('class-badge');
     if (classBadge) {
         classBadge.textContent = classInfo.name;
+    }
+    
+    // 如果已经玩过，禁用开始挑战按钮
+    const startBtn = document.getElementById('start-btn');
+    if (hasPlayed) {
+        startBtn.disabled = true;
+        startBtn.textContent = '已参加过挑战 ❌';
+        startBtn.style.opacity = '0.5';
+        startBtn.style.cursor = 'not-allowed';
+    } else {
+        startBtn.disabled = false;
+        startBtn.textContent = '开始挑战 🚀';
+        startBtn.style.opacity = '1';
+        startBtn.style.cursor = 'pointer';
     }
     
     // 切换到欢迎界面
@@ -121,19 +123,64 @@ function selectClass(classId) {
 
 // 开始游戏
 function startGame() {
-    if (gameState.hasPlayed) {
+    // 检查是否已经玩过
+    if (localStorage.getItem(`huarongdao_class${currentClass}_played`)) {
+        alert('你已经参加过正式挑战了！每个人只能参加一次。\n\n你可以点击“练习模式”继续练习哦！');
         return;
     }
     
+    gameState.isPracticeMode = false;
     switchScreen('welcome-screen', 'game-screen');
-    gameState.currentStage = 1;
     gameState.currentLevel = 0;
-    gameState.stage1StartTime = Date.now();
+    gameState.startTime = Date.now();
+    gameState.remaining = gameState.timeLimit;
+    
+    // 启动倒计时
+    startTimer();
     
     // 启动UI更新定时器
     startUIUpdateTimer();
     
     startLevel();
+}
+
+// 开始练习模式
+function startPracticeMode() {
+    gameState.isPracticeMode = true;
+    switchScreen('welcome-screen', 'game-screen');
+    gameState.currentLevel = 0;
+    gameState.startTime = Date.now();
+    gameState.remaining = 999999; // 练习模式不限时
+    
+    // 不启动倒计时，只启动UI更新
+    startUIUpdateTimer();
+    
+    startLevel();
+}
+
+// 启动倒计时
+function startTimer() {
+    if (gameState.timer) {
+        clearInterval(gameState.timer);
+    }
+    
+    gameState.timer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+        gameState.remaining = gameState.timeLimit - elapsed;
+        
+        if (gameState.remaining <= 0) {
+            gameState.remaining = 0;
+            clearInterval(gameState.timer);
+            clearInterval(gameState.uiUpdateTimer);
+            timeUp();
+        }
+    }, 100);
+}
+
+// 时间到
+function timeUp() {
+    alert('时间到！很遗憾，你没有在10分钟内完成所有关卡，无法上榜。');
+    switchScreen('game-screen', 'class-select-screen');
 }
 
 // 启动UI更新定时器
@@ -156,19 +203,14 @@ function startLevel() {
     updateUI();
     
     let config;
-    if (gameState.currentStage === 1) {
-        config = levelConfig.stage1[gameState.currentLevel];
+    if (gameState.isPracticeMode) {
+        // 练习模式：使用随机种子
+        const size = practiceLevelSizes[gameState.currentLevel % practiceLevelSizes.length];
+        const randomSeed = Date.now() + gameState.currentLevel;
+        config = { size: size, seed: randomSeed };
     } else {
-        if (gameState.currentLevel < levelConfig.stage2.length) {
-            config = levelConfig.stage2[gameState.currentLevel];
-        } else {
-            // 无限6×6关卡
-            const infiniteIndex = gameState.currentLevel - levelConfig.stage2.length;
-            config = {
-                size: 6,
-                seed: levelConfig.stage2Infinite.baseSeed + infiniteIndex
-            };
-        }
+        // 正式模式：使用固定种子
+        config = levelConfig[gameState.currentLevel];
     }
     
     generatePuzzle(config.size, config.seed);
@@ -391,55 +433,24 @@ function isPuzzleComplete() {
 
 // 处理关卡完成
 function handleLevelComplete() {
-    if (gameState.currentStage === 1) {
-        // 第一阶段
+    if (gameState.isPracticeMode) {
+        // 练习模式：无限循环
         gameState.currentLevel++;
-        if (gameState.currentLevel < levelConfig.stage1.length) {
+        startLevel();
+    } else {
+        // 正式模式
+        gameState.currentLevel++;
+        
+        if (gameState.currentLevel < levelConfig.length) {
             // 继续下一关
             startLevel();
         } else {
-            // 第一阶段完成，进入第二阶段
-            gameState.stage1EndTime = Date.now();
-            startStage2();
+            // 所有关卡完成，结束游戏
+            gameState.endTime = Date.now();
+            clearInterval(gameState.timer);
+            clearInterval(gameState.uiUpdateTimer);
+            endGame();
         }
-    } else {
-        // 第二阶段
-        const currentConfig = gameState.currentLevel < levelConfig.stage2.length 
-            ? levelConfig.stage2[gameState.currentLevel]
-            : { size: 6 };
-        
-        if (currentConfig.size === 6) {
-            gameState.stage2SixBySixCompleted++;
-        }
-        gameState.stage2Completed++;
-        
-        gameState.currentLevel++;
-        startLevel();
-    }
-}
-
-// 开始第二阶段
-function startStage2() {
-    gameState.currentStage = 2;
-    gameState.currentLevel = 0;
-    gameState.stage2StartTime = Date.now();
-    gameState.stage2Remaining = gameState.stage2TimeLimit;
-    
-    // 开始倒计时
-    gameState.stage2Timer = setInterval(updateStage2Timer, 1000);
-    
-    startLevel();
-}
-
-// 更新第二阶段计时器
-function updateStage2Timer() {
-    gameState.stage2Remaining--;
-    
-    if (gameState.stage2Remaining <= 0) {
-        clearInterval(gameState.stage2Timer);
-        clearInterval(gameState.uiUpdateTimer);
-        gameState.stage2EndTime = Date.now();
-        endGame();
     }
 }
 
@@ -451,32 +462,20 @@ function endGame() {
 
 // 计算并显示分数
 function calculateAndDisplayScore() {
-    // 第一阶段积分：600 / 用时（秒）
-    const stage1Time = (gameState.stage1EndTime - gameState.stage1StartTime) / 1000;
-    const stage1Score = (600 / stage1Time).toFixed(2);
-    
-    // 第二阶段积分：每完成一个3×3/4×4/5×5得1分，6×6得2分
-    const normalCompleted = gameState.stage2Completed - gameState.stage2SixBySixCompleted;
-    const stage2Score = normalCompleted + (gameState.stage2SixBySixCompleted * 2);
-    
-    // 总积分
-    const totalScore = (parseFloat(stage1Score) + stage2Score).toFixed(2);
+    // 总用时（秒）
+    const totalTime = (gameState.endTime - gameState.startTime) / 1000;
     
     // 显示成绩
-    document.getElementById('stage1-time').textContent = formatTime(Math.floor(stage1Time));
-    document.getElementById('stage1-score').textContent = stage1Score + ' 分';
-    document.getElementById('stage2-completed').textContent = 
-        `${normalCompleted}个（${gameState.stage2SixBySixCompleted}个6×6）`;
-    document.getElementById('stage2-score').textContent = stage2Score + ' 分';
-    document.getElementById('total-score').textContent = totalScore + ' 分';
+    document.getElementById('stage1-time').textContent = formatTime(Math.floor(totalTime));
+    document.getElementById('stage1-score').textContent = '已完成所有关卡';
+    document.getElementById('stage2-completed').textContent = '8个关卡全部完成';
+    document.getElementById('stage2-score').textContent = '用时：' + formatTime(Math.floor(totalTime));
+    document.getElementById('total-score').textContent = formatTime(Math.floor(totalTime));
     
     // 保存到游戏状态中，用于提交
     gameState.finalScore = {
-        stage1Time: Math.floor(stage1Time),
-        stage1Score: parseFloat(stage1Score),
-        stage2Completed: gameState.stage2Completed,
-        stage2Score: stage2Score,
-        totalScore: parseFloat(totalScore)
+        totalTime: Math.floor(totalTime),
+        completed: true
     };
 }
 
@@ -499,7 +498,7 @@ async function submitScore() {
     
     const scoreData = {
         name: name,
-        ...gameState.finalScore,
+        totalTime: gameState.finalScore.totalTime,
         timestamp: new Date().toLocaleString('zh-CN')
     };
     
@@ -543,7 +542,7 @@ function saveToLocal(scoreData) {
     const storageKey = `huarongdao_class${currentClass}_scores`;
     let allScores = JSON.parse(localStorage.getItem(storageKey) || '[]');
     allScores.push(scoreData);
-    allScores.sort((a, b) => b.totalScore - a.totalScore);
+    allScores.sort((a, b) => a.totalTime - b.totalTime); // 按用时升序，时间短排前
     localStorage.setItem(storageKey, JSON.stringify(allScores));
 }
 
@@ -555,11 +554,7 @@ async function submitToLeanCloud(scoreData) {
     score.set('classId', currentClass); // 添加班级标识
     score.set('className', CLASS_CONFIG[currentClass].name);
     score.set('name', scoreData.name);
-    score.set('stage1Time', scoreData.stage1Time);
-    score.set('stage1Score', scoreData.stage1Score);
-    score.set('stage2Completed', scoreData.stage2Completed);
-    score.set('stage2Score', scoreData.stage2Score);
-    score.set('totalScore', scoreData.totalScore);
+    score.set('totalTime', scoreData.totalTime);
     score.set('timestamp', scoreData.timestamp);
     
     await score.save();
@@ -575,29 +570,29 @@ function updateUI() {
     gameState.lastUpdateTime = now;
     
     // 更新阶段信息
-    const stageText = gameState.currentStage === 1 ? '第一阶段' : '第二阶段（限时10分钟）';
+    const stageText = gameState.isPracticeMode ? '练习模式 🎯' : '限时10分钟挑战';
     const stageEl = document.getElementById('stage-text');
     if (stageEl) stageEl.textContent = stageText;
     
     // 更新关卡信息
     const levelEl = document.getElementById('level-text');
     if (levelEl) {
-        if (gameState.currentStage === 1) {
-            levelEl.textContent = `关卡 ${gameState.currentLevel + 1}/${levelConfig.stage1.length}`;
+        if (gameState.isPracticeMode) {
+            const size = practiceLevelSizes[gameState.currentLevel % practiceLevelSizes.length];
+            levelEl.textContent = `关卡 ${gameState.currentLevel + 1} (${size}×${size})`;
         } else {
-            const completed = gameState.stage2Completed;
-            levelEl.textContent = `已完成: ${completed}`;
+            levelEl.textContent = `关卡 ${gameState.currentLevel + 1}/8`;
         }
     }
     
-    // 更新计时器
+    // 更新倒计时器
     const timerEl = document.getElementById('timer');
     if (timerEl) {
-        if (gameState.currentStage === 1) {
-            const elapsed = Math.floor((Date.now() - gameState.stage1StartTime) / 1000);
-            timerEl.textContent = '⏱️ ' + formatTime(elapsed);
+        if (gameState.isPracticeMode) {
+            const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+            timerEl.textContent = '⏱️ 用时 ' + formatTime(elapsed);
         } else {
-            timerEl.textContent = '⏱️ 剩余 ' + formatTime(gameState.stage2Remaining);
+            timerEl.textContent = '⏱️ 剩余 ' + formatTime(gameState.remaining);
         }
     }
     
@@ -639,6 +634,12 @@ function backToWelcome() {
     switchScreen('leaderboard-screen', 'welcome-screen');
 }
 
+// 返回班级选择界面
+function backToClassSelect() {
+    currentClass = null;
+    switchScreen('welcome-screen', 'class-select-screen');
+}
+
 // 加载排行榜
 async function loadLeaderboard() {
     const listDiv = document.getElementById('leaderboard-list');
@@ -663,8 +664,8 @@ async function loadLeaderboard() {
             return;
         }
         
-        // 按总分排序
-        allScores.sort((a, b) => b.totalScore - a.totalScore);
+        // 按用时升序（时间短排前）
+        allScores.sort((a, b) => a.totalTime - b.totalTime);
         
         let html = '';
         allScores.forEach((score, index) => {
@@ -692,7 +693,7 @@ async function loadLeaderboard() {
                         ${score.name}
                         <div class="leaderboard-time">${score.timestamp}</div>
                     </div>
-                    <div class="leaderboard-score">${score.totalScore.toFixed(2)} 分</div>
+                    <div class="leaderboard-score">${formatTime(score.totalTime)}</div>
                 </div>
             `;
         });
@@ -716,18 +717,14 @@ async function loadLeaderboard() {
 async function loadFromLeanCloud() {
     const query = new AV.Query('Leaderboard');
     query.equalTo('classId', currentClass); // 只查询当前班级的数据
-    query.descending('totalScore'); // 按总分降序
+    query.ascending('totalTime'); // 按用时升序（时间短排前）
     query.limit(100); // 最多显示100条
     
     const results = await query.find();
     
     return results.map(item => ({
         name: item.get('name'),
-        stage1Time: item.get('stage1Time'),
-        stage1Score: item.get('stage1Score'),
-        stage2Completed: item.get('stage2Completed'),
-        stage2Score: item.get('stage2Score'),
-        totalScore: item.get('totalScore'),
+        totalTime: item.get('totalTime'),
         timestamp: item.get('timestamp')
     }));
 }

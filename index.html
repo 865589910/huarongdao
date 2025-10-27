@@ -45,15 +45,18 @@
             <div class="welcome-content">
                 <h1>🎯 数学华容道挑战赛 🎯</h1>
                 <div class="class-badge" id="class-badge"></div>
+                <button id="back-to-class" class="btn-back">← 重新选择班级</button>
                 <div class="animal-sticker">🐼</div>
                 <p class="welcome-text">欢迎来到数学华容道游戏！</p>
                 <p class="info-text">📌 游戏规则：</p>
                 <ul class="rules-list">
-                    <li>第一阶段：完成5个关卡（2个3×3，2个4×4，1个5×5）</li>
-                    <li>第二阶段：10分钟限时挑战（2个3×3，2个4×4，2个5×5，无限6×6）</li>
+                    <li>10分钟内完成8个关卡（3个3×3，3个4×4，2个5×5）</li>
+                    <li>必须在10分钟内完成所有关卡才可上榜</li>
+                    <li>按完成用时排名，时间越短排名越前</li>
                     <li>每个人只能参加一次，请认真完成！</li>
                 </ul>
                 <button id="start-btn" class="btn-primary">开始挑战 🚀</button>
+                <button id="practice-btn" class="btn-practice">练习模式 🎯</button>
                 <button id="view-leaderboard-btn" class="btn-secondary">查看排行榜 📊</button>
             </div>
         </div>
@@ -105,24 +108,24 @@
                 <div class="score-details">
                     <h2>成绩单</h2>
                     <div class="score-item">
-                        <span>第一阶段用时：</span>
-                        <span id="stage1-time">--</span>
-                    </div>
-                    <div class="score-item">
-                        <span>第一阶段积分：</span>
+                        <span>完成情况：</span>
                         <span id="stage1-score">--</span>
                     </div>
                     <div class="score-item">
-                        <span>第二阶段完成数：</span>
+                        <span>关卡数：</span>
                         <span id="stage2-completed">--</span>
                     </div>
                     <div class="score-item">
-                        <span>第二阶段积分：</span>
-                        <span id="stage2-score">--</span>
+                        <span>总用时：</span>
+                        <span id="stage1-time">--</span>
                     </div>
                     <div class="score-item total">
-                        <span>总积分：</span>
+                        <span>最终用时：</span>
                         <span id="total-score">--</span>
+                    </div>
+                    <div class="score-item">
+                        <span></span>
+                        <span id="stage2-score" style="font-size: 0.9em; color: #666;">--</span>
                     </div>
                 </div>
 

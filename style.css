@@ -150,6 +150,29 @@ body {
     transform: translateY(-2px);
 }
 
+.btn-practice {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+    border: none;
+    padding: 18px 45px;
+    font-size: 1.4em;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
+    font-weight: bold;
+}
+
+.btn-practice:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(67, 233, 123, 0.6);
+}
+
+.btn-practice:active {
+    transform: translateY(-2px);
+}
+
 /* 班级选择界面 */
 .class-select-content {
     text-align: center;
@@ -219,6 +242,28 @@ body {
     font-weight: bold;
     margin-bottom: 15px;
     box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+}
+
+.btn-back {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+    box-shadow: 0 3px 10px rgba(127, 140, 141, 0.3);
+}
+
+.btn-back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(127, 140, 141, 0.4);
+}
+
+.btn-back:active {
+    transform: translateY(0);
 }
 
 /* 游戏界面 */
