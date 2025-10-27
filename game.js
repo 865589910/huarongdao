@@ -7,7 +7,11 @@ const LEANCLOUD_CONFIG = {
 
 // 初始化 LeanCloud
 if (typeof AV !== 'undefined') {
-    AV.init(LEANCLOUD_CONFIG);
+    AV.init({
+        appId: LEANCLOUD_CONFIG.appId,
+        appKey: LEANCLOUD_CONFIG.appKey,
+        serverURL: LEANCLOUD_CONFIG.serverURL
+    });
 }
 
 // 班级配置
@@ -504,12 +508,12 @@ async function submitScore() {
     
     try {
         // 提交到 LeanCloud
-        if (typeof AV !== 'undefined' && LEANCLOUD_CONFIG.appId !== '请替换为您的AppID') {
+        if (typeof AV !== 'undefined') {
             await submitToLeanCloud(scoreData);
             messageDiv.className = 'submit-message success';
             messageDiv.textContent = '✅ 成绩已提交！排行榜已更新！';
         } else {
-            // 如果未配置LeanCloud，只保存到本地
+            // 如果未LeanCloud SDK，只保存到本地
             saveToLocal(scoreData);
             messageDiv.className = 'submit-message success';
             messageDiv.textContent = '✅ 成绩提交成功！（本地存储）';
@@ -649,7 +653,7 @@ async function loadLeaderboard() {
         let allScores = [];
         
         // 尝试从 LeanCloud 加载
-        if (typeof AV !== 'undefined' && LEANCLOUD_CONFIG.appId !== '请替换为您的AppID') {
+        if (typeof AV !== 'undefined') {
             allScores = await loadFromLeanCloud();
         }
         
