@@ -507,7 +507,7 @@ async function submitScore() {
         if (typeof AV !== 'undefined' && LEANCLOUD_CONFIG.appId !== '请替换为您的AppID') {
             await submitToLeanCloud(scoreData);
             messageDiv.className = 'submit-message success';
-            messageDiv.textContent = '✅ 成绩已提交到云端！全球排行榜已更新！';
+            messageDiv.textContent = '✅ 成绩已提交！排行榜已更新！';
         } else {
             // 如果未配置LeanCloud，只保存到本地
             saveToLocal(scoreData);
