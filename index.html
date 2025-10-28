@@ -47,6 +47,14 @@
                 <div class="class-badge" id="class-badge"></div>
                 <button id="back-to-class" class="btn-back">← 重新选择班级</button>
                 <div class="animal-sticker">🐼</div>
+                
+                <!-- 姓名输入 -->
+                <div class="name-input-section" style="margin: 20px 0;">
+                    <label for="player-name-input" style="font-size: 1.2em; color: #FF69B4; font-weight: bold;">请输入你的姓名：</label>
+                    <input type="text" id="player-name-input" placeholder="请输入姓名" maxlength="10" style="padding: 12px; font-size: 1.1em; border: 2px solid #FF69B4; border-radius: 10px; width: 200px; margin-top: 10px;">
+                    <div id="name-check-message" style="margin-top: 10px; font-size: 0.9em;"></div>
+                </div>
+                
                 <p class="welcome-text">欢迎来到数学华容道游戏！</p>
                 <p class="info-text">📌 游戏规则：</p>
                 <ul class="rules-list">
@@ -129,11 +137,7 @@
                     </div>
                 </div>
 
-                <div class="name-input-section">
-                    <label for="player-name">请输入你的姓名：</label>
-                    <input type="text" id="player-name" placeholder="请输入姓名" maxlength="10">
-                    <button id="submit-score-btn" class="btn-primary">提交成绩</button>
-                </div>
+                <button id="submit-score-btn" class="btn-primary">提交成绩</button>
 
                 <div id="submit-message" class="submit-message"></div>
             </div>
